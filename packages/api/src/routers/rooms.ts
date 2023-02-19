@@ -1,6 +1,6 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
-import { publicProcedure, createTRPCRouter } from "../trpc";
+import { createTRPCRouter, publicProcedure } from "../trpc";
 
 const rooms = createTRPCRouter({
   list: publicProcedure.query(async ({ ctx }) => {
@@ -67,7 +67,7 @@ const rooms = createTRPCRouter({
         name: z.string(),
         text: z.string(),
         roomId: z.number().int(),
-      })
+      }),
     )
     .mutation(async ({ input, ctx }) => {
       return await ctx.prisma.review.create({
@@ -87,6 +87,28 @@ const rooms = createTRPCRouter({
         },
       });
       return newCleaning;
+    }),
+  finishCleaning: publicProcedure
+    .input(z.number().int())
+    .mutation(async ({ input, ctx }) => {
+      const cleaning = await ctx.prisma.actualCleaning.findUniqueOrThrow({
+        where: {
+          id: input,
+        },
+      });
+      if (cleaning.finishTime !== null) {
+        throw new TRPCError({
+          message: "Cleaning already finished",
+          code: "BAD_REQUEST",
+        });
+      }
+      cleaning.finishTime = new Date();
+      return await ctx.prisma.actualCleaning.update({
+        where: {
+          id: cleaning.id,
+        },
+        data: cleaning,
+      });
     }),
 });
 
