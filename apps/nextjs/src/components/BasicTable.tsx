@@ -9,6 +9,7 @@ type BasicTableProps = {
   onChangeClick: MouseEventHandler<HTMLButtonElement>;
   onAddClick: MouseEventHandler<HTMLButtonElement>;
 };
+import { useAutoAnimate } from '@formkit/auto-animate/react'
 
 export default function BasicTable({
   heading,
@@ -17,6 +18,7 @@ export default function BasicTable({
   onChangeClick,
   onAddClick,
 }: BasicTableProps) {
+  const [list] = useAutoAnimate();
   return (
     <section className="flex flex-col">
       <div className="flex items-center justify-between">
@@ -30,9 +32,9 @@ export default function BasicTable({
           <Button onClick={onAddClick}>Добавить</Button>
         </div>
       </div>
-      <div className="m-4 flex flex-col items-center justify-center gap-2">
+      <ul ref={list} className="m-4 flex flex-col items-center justify-center gap-2">
         {items()}
-      </div>
+      </ul>
     </section>
   );
 }
