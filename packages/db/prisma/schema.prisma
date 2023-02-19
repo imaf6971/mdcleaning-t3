@@ -29,12 +29,19 @@ model CleaningPlan {
 }
 
 model ActualCleaning {
-    id         Int       @id @default(autoincrement())
-    room       Room      @relation(fields: [roomId], references: [id])
-    roomId     Int
-    startTime  DateTime
-    finishTime DateTime?
+    id             Int              @id @default(autoincrement())
+    room           Room             @relation(fields: [roomId], references: [id])
+    roomId         Int
+    startTime      DateTime
+    finishTime     DateTime?
     // TODO: Staff field
+    cleaningPhotos CleaningPhotos[]
+}
+
+model CleaningPhotos {
+    path             String         @id @unique
+    actualCleaning   ActualCleaning @relation(fields: [actualCleaningId], references: [id])
+    actualCleaningId Int
 }
 
 model Cleaner {
