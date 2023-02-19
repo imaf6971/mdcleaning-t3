@@ -29,6 +29,7 @@ export const server = z.object({
  */
 export const client = z.object({
   // NEXT_PUBLIC_CLIENTVAR: z.string(),
+  NEXT_PUBLIC_ORIGIN: z.string().url(),
 });
 
 /**
@@ -44,6 +45,7 @@ const processEnv = {
   DISCORD_CLIENT_ID: process.env.DISCORD_CLIENT_ID,
   DISCORD_CLIENT_SECRET: process.env.DISCORD_CLIENT_SECRET,
   // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
+  NEXT_PUBLIC_ORIGIN: process.env.NEXT_PUBLIC_ORIGIN,
 };
 
 // Don't touch the part below
