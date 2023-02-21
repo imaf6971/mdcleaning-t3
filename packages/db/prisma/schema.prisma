@@ -20,7 +20,7 @@ model Room {
 
 model CleaningPlan {
     id        Int     @id @default(autoincrement())
-    room      Room    @relation(fields: [roomId], references: [id])
+    room      Room    @relation(fields: [roomId], references: [id], onDelete: Cascade)
     roomId    Int
     from      String // @db.Time for MySQL
     to        String // @db.Time for MySQL
@@ -30,7 +30,7 @@ model CleaningPlan {
 
 model ActualCleaning {
     id             Int              @id @default(autoincrement())
-    room           Room             @relation(fields: [roomId], references: [id])
+    room           Room             @relation(fields: [roomId], references: [id], onDelete: Cascade)
     roomId         Int
     startTime      DateTime
     finishTime     DateTime?
@@ -40,7 +40,7 @@ model ActualCleaning {
 
 model CleaningPhotos {
     path             String         @id @unique
-    actualCleaning   ActualCleaning @relation(fields: [actualCleaningId], references: [id])
+    actualCleaning   ActualCleaning @relation(fields: [actualCleaningId], references: [id], onDelete: Cascade)
     actualCleaningId Int
 }
 
@@ -57,7 +57,7 @@ model Review {
     name      String
     text      String
     createdAt DateTime
-    room      Room     @relation(fields: [roomId], references: [id])
+    room      Room     @relation(fields: [roomId], references: [id], onDelete: Cascade)
     roomId    Int
 }
 
