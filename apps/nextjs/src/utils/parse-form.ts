@@ -1,4 +1,3 @@
-import * as dateFn from "date-fns";
 import formidable from "formidable";
 import { mkdir, stat } from "fs/promises";
 import * as mime from "mime";
@@ -12,7 +11,7 @@ export const parseForm = async (
 ): Promise<{ fields: formidable.Fields; files: formidable.Files }> => {
   const uploadDir = join(
     process.env.ROOT_DIR || process.cwd(),
-    `/public/uploads/${dateFn.format(Date.now(), "dd-MM-Y")}`,
+    `/public/uploads`,
   );
 
   try {
