@@ -1,5 +1,4 @@
 import Head from "next/head";
-import Link from "next/link";
 import { useState } from "react";
 import BasicTable from "../../components/BasicTable";
 import AddStaffModal from "../../components/staff/AddStaffModal";
@@ -63,15 +62,20 @@ function StaffTable({ staff }: StaffTableProps) {
 
   function staffItems() {
     return staff.map((staff) => (
-      <Link key={staff.id} href={`/room/${staff.id}`} className="min-w-full">
+      <li
+        key={staff.id}
+        className="flex h-14 px-4 w-full justify-between items-center rounded-md border transition-shadow hover:shadow"
+      >
         {staff.firstName} {staff.lastName}
-      </Link>
+      </li>
     ));
   }
 
   return (
     <>
       <BasicTable
+        heading="Клинеры"
+        editable={false}
         items={staffItems}
         isEditing={isEditing}
         onAddClick={handleAddClick}
