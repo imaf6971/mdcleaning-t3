@@ -36,7 +36,11 @@ export default function CleaningTable({
   });
 
   function handleCleaningDelete(id: number) {
-    deleteCleaning.mutate(id);
+    deleteCleaning.mutate(id, {
+      onSuccess() {
+        setIsEditing(false);
+      },
+    });
   }
 
   function handleOnChangeClick() {
@@ -73,6 +77,7 @@ export default function CleaningTable({
   return (
     <>
       <BasicTable
+        editable={cleanings.length !== 0}
         items={cleaningItems}
         onAddClick={handleOnAddClick}
         isEditing={isEditing}
