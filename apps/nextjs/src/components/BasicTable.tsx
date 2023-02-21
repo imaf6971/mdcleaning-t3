@@ -1,15 +1,15 @@
+import { useAutoAnimate } from "@formkit/auto-animate/react";
 import type { MouseEventHandler } from "react";
-import React from "react";
 import Button from "../ui/Button";
 
 type BasicTableProps = {
   heading?: string;
   items: () => JSX.Element[] | undefined;
-  isEditing: boolean;
-  onChangeClick: MouseEventHandler<HTMLButtonElement>;
+  isEditing?: boolean;
+  onChangeClick?: MouseEventHandler<HTMLButtonElement>;
   onAddClick: MouseEventHandler<HTMLButtonElement>;
+  editable: boolean;
 };
-import { useAutoAnimate } from '@formkit/auto-animate/react'
 
 export default function BasicTable({
   heading,
@@ -17,6 +17,7 @@ export default function BasicTable({
   isEditing,
   onChangeClick,
   onAddClick,
+  editable,
 }: BasicTableProps) {
   const [list] = useAutoAnimate();
   return (
@@ -24,15 +25,19 @@ export default function BasicTable({
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-medium">{heading || " "}</h2>
         <div className="flex gap-2">
-          {isEditing ? (
-            <Button onClick={onChangeClick}>Отмена</Button>
-          ) : (
-            <Button onClick={onChangeClick}>Изменить</Button>
-          )}
+          {editable &&
+            (isEditing ? (
+              <Button onClick={onChangeClick}>Отмена</Button>
+            ) : (
+              <Button onClick={onChangeClick}>Изменить</Button>
+            ))}
           <Button onClick={onAddClick}>Добавить</Button>
         </div>
       </div>
-      <ul ref={list} className="m-4 flex flex-col items-center justify-center gap-2">
+      <ul
+        ref={list}
+        className="m-4 flex flex-col items-center justify-center gap-2"
+      >
         {items()}
       </ul>
     </section>
