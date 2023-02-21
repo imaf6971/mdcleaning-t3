@@ -10,7 +10,7 @@ export default function Modal({ onClose, children }: ModalProps) {
   return (
     <div
       onClick={onClose}
-      className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-25 backdrop-blur transition-all"
+      className="fixed inset-0 flex items-center z-50 justify-center bg-black bg-opacity-25 backdrop-blur transition-all"
     >
       <div
         onClick={(e) => e.stopPropagation()}
