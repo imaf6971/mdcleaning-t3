@@ -7,6 +7,7 @@ type InputProps = {
   onChange?: ChangeEventHandler<HTMLInputElement>;
   required?: boolean;
   minLength?: number;
+  type?: string;
 };
 
 export default function Input({
@@ -16,6 +17,7 @@ export default function Input({
   id,
   required = false,
   minLength = 0,
+  type = 'text',
 }: InputProps) {
   return (
     <div className="flex flex-col items-start justify-between text-center">
@@ -28,7 +30,7 @@ export default function Input({
         id={id}
         name={id}
         className="w-full rounded-md border p-2 transition-shadow invalid:ring-red-300 hover:shadow focus:bg-gray-200 focus:outline-none focus:ring"
-        type="text"
+        type={type}
         value={value}
         onChange={onChange}
       />
