@@ -25,7 +25,7 @@ export default function Home() {
       </Head>
       <Navbar />
       <div className="container mx-auto">
-        <SectionHeading heading="Комнаты" />
+        <SectionHeading heading={'ООО "Рога и Копыта"'} />
         {rooms.isSuccess && (
           <main className="m-4 flex flex-col justify-center gap-2 md:mx-auto md:w-2/3">
             <RoomTable rooms={rooms.data} />

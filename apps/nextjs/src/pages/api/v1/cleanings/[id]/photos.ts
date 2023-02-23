@@ -37,6 +37,7 @@ const handler: NextApiHandler = async (req, res) => {
     if (fileObj === undefined) {
       continue;
     }
+    console.log(fileObj);
     if (Array.isArray(fileObj)) {
       fileObj.forEach((file) => {
         void createCleaningPhotoInDb(cleaningId, file.newFilename);

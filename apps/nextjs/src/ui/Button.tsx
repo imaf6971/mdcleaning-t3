@@ -15,7 +15,7 @@ export default function Button({
     <button
       onClick={onClick}
       disabled={disabled}
-      className="disabled:bg-gray-200 rounded-md border p-2 transition-shadow hover:shadow focus:bg-gray-200 focus:outline-none focus:ring"
+      className="flex gap-1 items-center justify-between rounded-md border p-2 transition-shadow hover:shadow focus:bg-gray-200 focus:outline-none focus:ring disabled:bg-gray-200"
     >
       {children}
     </button>

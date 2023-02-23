@@ -1,4 +1,5 @@
 import { useAutoAnimate } from "@formkit/auto-animate/react";
+import { PlusCircleIcon } from "@heroicons/react/24/outline";
 import type { MouseEventHandler } from "react";
 import Button from "../ui/Button";
 
@@ -31,7 +32,10 @@ export default function BasicTable({
             ) : (
               <Button onClick={onChangeClick}>Изменить</Button>
             ))}
-          <Button onClick={onAddClick}>Добавить</Button>
+          <Button onClick={onAddClick}>
+            <PlusCircleIcon className="h-5 w-5" />
+            <span>Добавить</span>
+          </Button>
         </div>
       </div>
       <ul
