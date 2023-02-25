@@ -2,63 +2,63 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-    provider = "prisma-client-js"
+  provider = "prisma-client-js"
 }
 
 datasource db {
-    provider = "sqlite"
-    url      = env("DATABASE_URL")
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
 }
 
 model Room {
-    id               Int              @id @default(autoincrement())
-    title            String
-    plannedCleanings CleaningPlan[]
-    reviews          Review[]
-    actualCleanings  ActualCleaning[]
+  id               Int              @id @default(autoincrement())
+  title            String
+  plannedCleanings CleaningPlan[]
+  reviews          Review[]
+  actualCleanings  ActualCleaning[]
 }
 
 model CleaningPlan {
-    id        Int     @id @default(autoincrement())
-    room      Room    @relation(fields: [roomId], references: [id], onDelete: Cascade)
-    roomId    Int
-    from      String // @db.Time for MySQL
-    to        String // @db.Time for MySQL
-    cleaner   Cleaner @relation(fields: [cleanerId], references: [id])
-    cleanerId Int
+  id        Int     @id @default(autoincrement())
+  room      Room    @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  roomId    Int
+  from      String // @db.Time for MySQL
+  to        String // @db.Time for MySQL
+  cleaner   Cleaner @relation(fields: [cleanerId], references: [id])
+  cleanerId Int
 }
 
 model ActualCleaning {
-    id             Int              @id @default(autoincrement())
-    room           Room             @relation(fields: [roomId], references: [id], onDelete: Cascade)
-    roomId         Int
-    startTime      DateTime
-    finishTime     DateTime?
-    // TODO: Staff field
-    cleaningPhotos CleaningPhotos[]
+  id             Int              @id @default(autoincrement())
+  room           Room             @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  roomId         Int
+  startTime      DateTime
+  finishTime     DateTime?
+  // TODO: Staff field
+  cleaningPhotos CleaningPhotos[]
 }
 
 model CleaningPhotos {
-    path             String         @id @unique
-    actualCleaning   ActualCleaning @relation(fields: [actualCleaningId], references: [id], onDelete: Cascade)
-    actualCleaningId Int
+  path             String         @id @unique
+  actualCleaning   ActualCleaning @relation(fields: [actualCleaningId], references: [id], onDelete: Cascade)
+  actualCleaningId Int
 }
 
 model Cleaner {
-    id               Int            @id @default(autoincrement())
-    firstName        String
-    lastName         String
-    patronymic       String?
-    plannedCleanings CleaningPlan[]
+  id               Int            @id @default(autoincrement())
+  firstName        String
+  lastName         String
+  patronymic       String?
+  plannedCleanings CleaningPlan[]
 }
 
 model Review {
-    id        Int      @id @default(autoincrement())
-    name      String
-    text      String
-    createdAt DateTime
-    room      Room     @relation(fields: [roomId], references: [id], onDelete: Cascade)
-    roomId    Int
+  id        Int      @id @default(autoincrement())
+  name      String
+  text      String
+  createdAt DateTime
+  room      Room     @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  roomId    Int
 }
 
 // NextAuth.js Models
@@ -66,45 +66,51 @@ model Review {
 // uncomment the @db.Text annotations below
 // @see https://next-auth.js.org/schemas/models
 model Account {
-    id                String  @id @default(cuid())
-    userId            String
-    type              String
-    provider          String
-    providerAccountId String
-    refresh_token     String? // @db.Text
-    access_token      String? // @db.Text
-    expires_at        Int?
-    token_type        String?
-    scope             String?
-    id_token          String? // @db.Text
-    session_state     String?
-    user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? // @db.Text
+  access_token      String? // @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? // @db.Text
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-    @@unique([provider, providerAccountId])
+  @@unique([provider, providerAccountId])
 }
 
 model Session {
-    id           String   @id @default(cuid())
-    sessionToken String   @unique
-    userId       String
-    expires      DateTime
-    user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model User {
-    id            String    @id @default(cuid())
-    name          String?
-    email         String?   @unique
-    emailVerified DateTime?
-    image         String?
-    accounts      Account[]
-    sessions      Session[]
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  accounts      Account[]
+  sessions      Session[]
 }
 
 model VerificationToken {
-    identifier String
-    token      String   @unique
-    expires    DateTime
+  identifier String
+  token      String   @unique
+  expires    DateTime
 
-    @@unique([identifier, token])
+  @@unique([identifier, token])
+}
+
+model Credentials {
+  id                Int    @id @default(autoincrement())
+  username          String @unique
+  encryptedPassword String
 }

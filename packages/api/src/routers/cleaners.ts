@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { publicProcedure, createTRPCRouter } from "../trpc";
+import { publicProcedure, createTRPCRouter, protectedProcedure } from "../trpc";
 
 const cleaners = createTRPCRouter({
   list: publicProcedure.query(async ({ ctx }) => {
@@ -24,6 +24,19 @@ const cleaners = createTRPCRouter({
         data: input,
       });
     }),
+  deleteById: protectedProcedure
+  .input(
+    z.object({
+      id: z.number().int()
+    })
+  )
+  .mutation(({input, ctx}) => {
+    return ctx.prisma.cleaner.delete({
+      where: {
+        id: input.id
+      }
+    })
+  })
 });
 
 export default cleaners;

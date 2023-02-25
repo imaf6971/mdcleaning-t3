@@ -1,6 +1,7 @@
+import * as bcrypt from "bcrypt";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { type DefaultSession, type NextAuthOptions } from "next-auth";
-import DiscordProvider from "next-auth/providers/discord";
+import CredentialsProvider from "next-auth/providers/credentials";
 import { prisma } from "@acme/db";
 
 /**
@@ -41,10 +42,6 @@ export const authOptions: NextAuthOptions = {
   },
   adapter: PrismaAdapter(prisma),
   providers: [
-    DiscordProvider({
-      clientId: process.env.DISCORD_CLIENT_ID as string,
-      clientSecret: process.env.DISCORD_CLIENT_SECRET as string,
-    }),
     /**
      * ...add more providers here
      *
@@ -54,5 +51,32 @@ export const authOptions: NextAuthOptions = {
      * NextAuth.js docs for the provider you want to use. Example:
      * @see https://next-auth.js.org/providers/github
      **/
+    CredentialsProvider({
+      credentials: {
+        username: { label: "Имя пользователя", type: "text" },
+        password: { label: "Пароль", type: "password" },
+      },
+      async authorize(credentials) {
+        if (credentials === undefined) {
+          throw new Error("credentials is undefined");
+        }
+        const dbCredentials = await prisma.credentials.findUnique({
+          where: {
+            username: credentials.username,
+          }
+        });
+        if (dbCredentials === null) {
+          throw new Error("Пользователя с данным именем не существует!");
+        }
+        const isPasswordMatch = await bcrypt.compare(credentials.password, dbCredentials.encryptedPassword);
+        if (!isPasswordMatch) {
+          throw new Error("Неверный пароль!");
+        }
+        return {
+          id: dbCredentials.id.toString(),
+          name: dbCredentials.username,
+        }
+      },
+    })
   ],
 };

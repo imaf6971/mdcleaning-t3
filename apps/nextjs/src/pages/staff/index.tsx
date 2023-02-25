@@ -1,12 +1,12 @@
 import Head from "next/head";
 import { useState } from "react";
+import Button from "~/ui/Button";
 import BasicTable from "../../components/BasicTable";
 import AddStaffModal from "../../components/staff/AddStaffModal";
 import Navbar from "../../ui/Navbar";
 import SectionHeading from "../../ui/SectionHeading";
 import { api } from "../../utils/api";
 import { createSSG } from "../../utils/ssg";
-
 export async function getServerSideProps() {
   const ssTrpc = createSSG();
   await ssTrpc.cleaners.list.prefetch();
@@ -18,7 +18,13 @@ export async function getServerSideProps() {
 }
 
 export default function StaffIndex() {
+  const { data: session } = api.auth.getSession.useQuery();
+  
+
   const staff = api.cleaners.list.useQuery();
+
+  if (session?.user) { console.log('lol') } else { console.log('not lol') }
+
   return (
     <>
       <Head>
@@ -33,6 +39,7 @@ export default function StaffIndex() {
           </main>
         )}
         {staff.isLoading && <div>Loading...</div>}
+        
       </div>
     </>
   );
@@ -52,6 +59,8 @@ function StaffTable({ staff }: StaffTableProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [isAdding, setIsAdding] = useState(false);
 
+  const deleteCleanerById = api.cleaners.deleteById.useMutation();
+
   function handleAddClick() {
     setIsAdding(true);
   }
@@ -66,7 +75,12 @@ function StaffTable({ staff }: StaffTableProps) {
         key={staff.id}
         className="flex h-14 px-4 w-full justify-between items-center rounded-md border transition-shadow hover:shadow"
       >
-        {staff.firstName} {staff.lastName}
+        <span>{staff.firstName} {staff.lastName}</span>
+        {isEditing && <Button onClick={() => {
+          deleteCleanerById.mutate({ id: staff.id }, {
+            onSuccess: () => setIsEditing(false),
+          })
+        }}>Удалить</Button>}
       </li>
     ));
   }
@@ -75,7 +89,7 @@ function StaffTable({ staff }: StaffTableProps) {
     <>
       <BasicTable
         heading="Клинеры"
-        editable={false}
+        editable={staff.length !== 0}
         items={staffItems}
         isEditing={isEditing}
         onAddClick={handleAddClick}
