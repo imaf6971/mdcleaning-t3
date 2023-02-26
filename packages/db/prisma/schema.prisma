@@ -10,12 +10,37 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Item {
+  id          Int     @id @default(autoincrement())
+  title       String
+  description String
+  photoPath   String? @unique
+  room        Room[]
+}
+
+model Client {
+  id         Int         @id @default(autoincrement())
+  title      String
+  roomGroups RoomGroup[]
+}
+
+model RoomGroup {
+  id       Int    @id @default(autoincrement())
+  title    String
+  rooms    Room[]
+  client   Client @relation(fields: [clientId], references: [id])
+  clientId Int
+}
+
 model Room {
   id               Int              @id @default(autoincrement())
   title            String
+  items            Item[]
   plannedCleanings CleaningPlan[]
   reviews          Review[]
   actualCleanings  ActualCleaning[]
+  roomGroup        RoomGroup        @relation(fields: [roomGroupId], references: [id])
+  roomGroupId      Int
 }
 
 model CleaningPlan {
