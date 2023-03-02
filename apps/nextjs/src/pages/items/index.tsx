@@ -18,7 +18,11 @@ const ItemsPage: NextPage = () => {
       <Navbar />
       <SectionHeading heading="Инвентарь" />
       <main className="m-4 flex flex-col justify-center gap-2 md:mx-auto md:w-2/3">
-        {isLoading && <Spinner />}
+        {isLoading && (
+          <div className="mx-auto">
+            <Spinner />
+          </div>
+        )}
         {isSuccess && <ul ref={itemList}>
           {items.map((i) => (
             <li key={i.id}>
