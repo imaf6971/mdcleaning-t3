@@ -9,7 +9,7 @@ import { api } from "~/utils/api";
 const ItemsPage: NextPage = () => {
   const { data: items, isLoading, isError, isSuccess } = api.item.list.useQuery();
 
-  const itemList = useAutoAnimate();
+  const [itemList] = useAutoAnimate();
   return (
     <>
       <Head>
@@ -25,8 +25,8 @@ const ItemsPage: NextPage = () => {
               {i.title}
             </li>
           ))}
-        </ul>
-        }
+        </ul>}
+        {isError && <span>Some error ocquired!!!</span>}
       </main>
     </>
   )
