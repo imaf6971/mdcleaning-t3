@@ -4,6 +4,7 @@ import cleaners from "./routers/cleaners";
 import cleaningPlan from "./routers/cleaningPlan";
 import rooms from "./routers/rooms";
 import cleanings from "./routers/cleanings"; 
+import item from './router/items'
 import { createTRPCRouter } from "./trpc";
 
 export const appRouter = createTRPCRouter({
@@ -13,6 +14,7 @@ export const appRouter = createTRPCRouter({
   rooms,
   cleaningPlan,
   cleanings,
+  item,
 });
 
 // export type definition of API
