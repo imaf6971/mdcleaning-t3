@@ -8,9 +8,7 @@ import Button from "./Button";
 import { signIn, signOut, useSession } from "next-auth/react";
 
 export default function Navbar() {
-  const { data: session } = useSession();
-  console.log(session);
-
+  const { data: session } = api.auth.getSession.useQuery();
   return (
     <nav className="border-b bg-gray-800 px-8 py-2 md:flex md:items-center md:justify-between">
       <div>
