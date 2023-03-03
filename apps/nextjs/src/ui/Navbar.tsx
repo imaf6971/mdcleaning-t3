@@ -5,10 +5,11 @@ import {
 import Link from "next/link";
 import { api } from "~/utils/api";
 import Button from "./Button";
-import { signIn } from "next-auth/react";
+import { signIn, signOut, useSession } from "next-auth/react";
 
 export default function Navbar() {
-  const { data: session } = api.auth.getSession.useQuery();
+  const { data: session } = useSession();
+  console.log(session);
 
   return (
     <nav className="border-b bg-gray-800 px-8 py-2 md:flex md:items-center md:justify-between">
@@ -32,6 +33,7 @@ export default function Navbar() {
               <UsersIcon className="h-5 w-5" />
               <span>Сотрудники</span>
             </Link>
+            <Button onClick={() => void signOut()}>Выйти</Button>
           </>
           :
           <>
