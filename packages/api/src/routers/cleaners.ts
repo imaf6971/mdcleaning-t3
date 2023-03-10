@@ -2,7 +2,7 @@ import { z } from "zod";
 import { publicProcedure, createTRPCRouter, protectedProcedure } from "../trpc";
 
 const cleaners = createTRPCRouter({
-  list: publicProcedure.query(async ({ ctx }) => {
+  list: protectedProcedure.query(async ({ ctx }) => {
     return await ctx.prisma.cleaner.findMany({
       select: {
         id: true,
@@ -25,18 +25,18 @@ const cleaners = createTRPCRouter({
       });
     }),
   deleteById: protectedProcedure
-  .input(
-    z.object({
-      id: z.number().int()
+    .input(
+      z.object({
+        id: z.number().int()
+      })
+    )
+    .mutation(({ input, ctx }) => {
+      return ctx.prisma.cleaner.delete({
+        where: {
+          id: input.id
+        }
+      })
     })
-  )
-  .mutation(({input, ctx}) => {
-    return ctx.prisma.cleaner.delete({
-      where: {
-        id: input.id
-      }
-    })
-  })
 });
 
 export default cleaners;
