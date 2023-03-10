@@ -45,12 +45,21 @@ const rooms = createTRPCRouter({
       }
     }),
   add: publicProcedure
-    .input(z.object({ title: z.string().min(1) }))
+    .input(z.object({
+      title: z.string().min(1),
+      groupId: z.number().int()
+    }))
     .mutation(async ({ input, ctx }) => {
-      const newRoom = await ctx.prisma.room.create({
-        data: input,
+      return await ctx.prisma.room.create({
+        data: {
+          title: input.title,
+          roomGroup: {
+            connect: {
+              id: input.groupId
+            }
+          }
+        }
       });
-      return newRoom;
     }),
   deleteById: publicProcedure
     .input(z.number().int())
