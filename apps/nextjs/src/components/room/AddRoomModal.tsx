@@ -7,20 +7,21 @@ import { useState } from "react";
 
 type AddRoomModalProps = {
   onClose: () => void;
+  groupId: number;
 };
 
-export default function AddRoomModal({ onClose }: AddRoomModalProps) {
+export default function AddRoomModal({ onClose, groupId }: AddRoomModalProps) {
   const utils = api.useContext();
   const addRooms = api.rooms.add.useMutation({
     onSuccess() {
-      void utils.rooms.list.invalidate();
-    },
+      utils.clients.byId.invalidate();
+    }
   });
   const [roomTitle, setRoomTitle] = useState("");
 
   function handleAddRoomSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    addRooms.mutate({ title: roomTitle });
+    addRooms.mutate({ title: roomTitle, groupId });
     onClose();
   }
 
