@@ -32,7 +32,7 @@ const clients = createTRPCRouter({
     }),
   createRoomGroup: protectedProcedure
     .input(z.object({
-      roomId: z.number().int(),
+      clientId: z.number().int(),
       roomGroupTitle: z.string().min(1),
     }))
     .mutation(({ ctx, input }) => {
@@ -41,7 +41,7 @@ const clients = createTRPCRouter({
           title: input.roomGroupTitle,
           client: {
             connect: {
-              id: input.roomId
+              id: input.clientId
             }
           }
         }
