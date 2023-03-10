@@ -5,7 +5,7 @@ import {
 import Link from "next/link";
 import { api } from "~/utils/api";
 import Button from "./Button";
-import { signIn, signOut, useSession } from "next-auth/react";
+import { signIn, signOut } from "next-auth/react";
 
 export default function Navbar() {
   const { data: session } = api.auth.getSession.useQuery();
@@ -22,7 +22,7 @@ export default function Navbar() {
               className="my-4 flex items-center justify-between gap-1 rounded-md px-3 py-2 text-lg font-medium duration-300 hover:bg-gray-700 hover:text-white md:my-0"
             >
               <ArrowLeftOnRectangleIcon className="h-5 w-5 rotate-180" />
-              <span>Комнаты</span>
+              <span>Клиенты</span>
             </Link>
             <Link
               href="/staff"
