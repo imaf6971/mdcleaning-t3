@@ -1,6 +1,5 @@
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { PlusCircleIcon } from "@heroicons/react/24/outline";
-import { once } from "events";
 import Head from "next/head";
 import Link from "next/link";
 import { FormEvent, useState } from "react";
@@ -12,16 +11,6 @@ import SubmitInput from "~/ui/SubmitInput";
 import Navbar from "../ui/Navbar";
 import SectionHeading from "../ui/SectionHeading";
 import { api } from "../utils/api";
-
-// export async function getServerSideProps() {
-//   const ssTrpc = createSSG();
-//   await ssTrpc.rooms.list.prefetch();
-//   return {
-//     props: {
-//       trpcState: ssTrpc.dehydrate(),
-//     },
-//   };
-// }
 
 export default function Home() {
   const user = api.auth.getSession.useQuery();
