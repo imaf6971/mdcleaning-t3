@@ -1,6 +1,7 @@
 import {
   ArrowLeftOnRectangleIcon,
   UsersIcon,
+  WalletIcon,
 } from "@heroicons/react/24/outline";
 import Link from "next/link";
 import { api } from "~/utils/api";
@@ -23,6 +24,13 @@ export default function Navbar() {
             >
               <ArrowLeftOnRectangleIcon className="h-5 w-5 rotate-180" />
               <span>Клиенты</span>
+            </Link>
+            <Link
+              href="/items"
+              className="my-4 flex items-center justify-between gap-1 rounded-md px-3 py-2 text-lg font-medium duration-300 hover:bg-gray-700 hover:text-white md:my-0"
+            >
+              <WalletIcon className="h-5 w-5" />
+              <span>Инвентарь</span>
             </Link>
             <Link
               href="/staff"
