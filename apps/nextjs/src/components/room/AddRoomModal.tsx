@@ -14,7 +14,7 @@ export default function AddRoomModal({ onClose, groupId }: AddRoomModalProps) {
   const utils = api.useContext();
   const addRooms = api.rooms.add.useMutation({
     onSuccess() {
-      utils.clients.byId.invalidate();
+      void utils.clients.byId.invalidate();
     }
   });
   const [roomTitle, setRoomTitle] = useState("");
