@@ -25,7 +25,7 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>Комнаты</title>
+        <title>Клиенты</title>
       </Head>
       <Navbar />
       <div className="container mx-auto">
@@ -34,7 +34,11 @@ export default function Home() {
             <PlusCircleIcon className="h-5 w-5" />
           </Button>
         </SectionHeading>
-        {clients.isLoading && <Spinner />}
+        {clients.isLoading && (
+          <div className="w-full flex justify-center">
+            <Spinner />
+          </div>
+        )}
         {clients.isSuccess && (
           <main className="m-4 flex flex-col justify-center gap-2 md:mx-auto md:w-2/3">
             <ul className="flex flex-col gap-2" ref={clientList}>
@@ -69,7 +73,7 @@ function AddClientModal({ onClose }: AddClientModalProps) {
     e.preventDefault();
     addClientMutation.mutate({ title }, {
       onSuccess() {
-        utils.clients.list.invalidate();
+        void utils.clients.list.invalidate();
         onClose()
       }
     })
