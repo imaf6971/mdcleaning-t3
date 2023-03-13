@@ -5,25 +5,11 @@ import BasicTable from "../../components/BasicTable";
 import AddStaffModal from "../../components/staff/AddStaffModal";
 import Navbar from "../../ui/Navbar";
 import SectionHeading from "../../ui/SectionHeading";
+
 import { api } from "../../utils/api";
-import { createSSG } from "../../utils/ssg";
-export async function getServerSideProps() {
-  const ssTrpc = createSSG();
-  await ssTrpc.cleaners.list.prefetch();
-  return {
-    props: {
-      trpcState: ssTrpc.dehydrate(),
-    },
-  };
-}
 
 export default function StaffIndex() {
-  const { data: session } = api.auth.getSession.useQuery();
-  
-
   const staff = api.cleaners.list.useQuery();
-
-  if (session?.user) { console.log('lol') } else { console.log('not lol') }
 
   return (
     <>
@@ -39,7 +25,7 @@ export default function StaffIndex() {
           </main>
         )}
         {staff.isLoading && <div>Loading...</div>}
-        
+
       </div>
     </>
   );
