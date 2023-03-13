@@ -1,42 +1,28 @@
 import { ActualCleaning } from "@acme/db";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
-import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
+import { ChevronLeftIcon, ChevronRightIcon, PlusCircleIcon } from "@heroicons/react/24/outline";
 import { ArrowLeftIcon } from "@heroicons/react/24/solid";
-import type { NextPage } from "next";
 import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useMemo, useState } from "react";
+import { FormEventHandler, useMemo, useState } from "react";
+import Button from "~/ui/Button";
+import Modal from "~/ui/Modal";
+import Select from "~/ui/Select";
+import SubmitInput from "~/ui/SubmitInput";
 import CleaningTable from "../../components/cleaning/CleaningTable";
 import { RoomQR } from "../../components/room/RoomQR";
 import { api } from "../../utils/api";
 
-// export async function getServerSideProps(
-//   context: GetServerSidePropsContext<{ id: string }>
-// ) {
-//   const ssTrpc = createSSG();
-//   const id = parseInt(context.params?.id as string);
-//   try {
-//     await ssTrpc.rooms.findById.fetch(id);
-//   } catch (error) {
-//     return {
-//       notFound: true,
-//     };
-//   }
-//   return {
-//     props: {
-//       trpcState: ssTrpc.dehydrate(),
-//       id,
-//     },
-//   };
-// }
-
-const Room: NextPage = () => {
+export default function Room() {
   const router = useRouter();
   const id = parseInt(router.query.id as string);
   const { data: room, isSuccess } = api.rooms.findById.useQuery(id);
 
   const [animate] = useAutoAnimate();
+  const [hintsList] = useAutoAnimate();
+
+  const [isAddingHint, setIsAddingHint] = useState(false);
   return (
     <>
       <Head>
@@ -62,24 +48,86 @@ const Room: NextPage = () => {
               ) : (
                 <ul ref={animate}>
                   {room.reviews.map((review) => (
-                    <li key={review.id}>
-                      <div>
-                        {review.name} от {review.createdAt.toLocaleString()}
+                    <li key={review.id}
+                      className="border rounded-md flex flex-col gap-2 p-4"
+                    >
+                      <div className="flex justify-between">
+                        <span className="font-medium">{review.name}</span>
+                        <span>{review.createdAt.toLocaleString()}</span>
                       </div>
                       <div>{review.text}</div>
                     </li>
                   ))}
                 </ul>
               )}
+              <div className="flex justify-between">
+                <h2 className="text-lg font-medium">Подсказки</h2>
+                <Button onClick={() => setIsAddingHint(true)}>
+                  <PlusCircleIcon className="h-5 w-5" />
+                  <span>Добавить</span>
+                </Button>
+                {isAddingHint && <AddHintModal roomId={room.id} onClose={() => setIsAddingHint(false)} />}
+              </div>
+              <ul ref={hintsList}>
+                {room.items.map((hint) => (
+                  <li className="h-14 rounded-md border px-2 flex items-center justify-between" key={hint.id}>
+                    {hint.title}
+                  </li>
+                ))}
+              </ul>
             </>
           )}
         </main>
       </div>
     </>
   );
-};
+}
 
-export default Room;
+type AddHintModalProps = {
+  roomId: number;
+  onClose: () => void;
+}
+
+function AddHintModal({ roomId, onClose }: AddHintModalProps) {
+  const { data: items } = api.item.list.useQuery();
+
+  const [selectedItem, setSelectedItem] = useState<number>();
+  const options = items?.map(item => ({
+    label: item.title,
+    value: item.id
+  })) ?? [];
+  const selectedOption = options.find((option) => option.value === selectedItem)
+
+  const utils = api.useContext();
+  const addHintToRoom = api.rooms.addHint.useMutation();
+  const handleAddItem: FormEventHandler = (e) => {
+    e.preventDefault();
+    if (selectedItem === undefined) {
+      return;
+    }
+    addHintToRoom.mutate({ roomId, itemId: selectedItem }, {
+      onSuccess() {
+        utils.rooms.findById.invalidate(roomId)
+          .then(onClose)
+          .catch(onClose)
+      }
+    })
+  }
+
+  return (
+    <Modal onClose={onClose}>
+      <form onSubmit={handleAddItem} className="flex flex-col gap-2 p-2">
+        <h2 className="mb-2 text-lg font-medium">Добавить Hint</h2>
+        <Select
+          selectedOption={selectedOption}
+          label=""
+          onChange={(opt) => setSelectedItem(opt?.value ?? -1)}
+          options={options} />
+        <SubmitInput value="Add" />
+      </form>
+    </Modal>
+  )
+}
 
 const pageArray = <T,>(page: number, pageSize: number, arr: T[]) =>
   arr.filter(
