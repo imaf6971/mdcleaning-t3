@@ -59,8 +59,9 @@ model ActualCleaning {
   roomId         Int
   startTime      DateTime
   finishTime     DateTime?
-  // TODO: Staff field
   cleaningPhotos CleaningPhotos[]
+  cleaner        Cleaner          @relation(fields: [cleanerId], references: [id])
+  cleanerId      Int
 }
 
 model CleaningPhotos {
@@ -70,11 +71,13 @@ model CleaningPhotos {
 }
 
 model Cleaner {
-  id               Int            @id @default(autoincrement())
+  id               Int              @id @default(autoincrement())
+  token            String           @unique @default(cuid())
   firstName        String
   lastName         String
   patronymic       String?
   plannedCleanings CleaningPlan[]
+  ActualCleaning   ActualCleaning[]
 }
 
 model Review {
