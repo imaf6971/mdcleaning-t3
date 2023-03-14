@@ -1,6 +1,9 @@
+import { Cleaner } from "@acme/db";
+import { EyeIcon } from "@heroicons/react/24/outline";
 import Head from "next/head";
 import { useState } from "react";
 import Button from "~/ui/Button";
+import Modal from "~/ui/Modal";
 import BasicTable from "../../components/BasicTable";
 import AddStaffModal from "../../components/staff/AddStaffModal";
 import Navbar from "../../ui/Navbar";
@@ -31,20 +34,17 @@ export default function StaffIndex() {
   );
 }
 
-type Staff = {
-  id: number;
-  firstName: string;
-  lastName: string;
-};
-
 type StaffTableProps = {
-  staff: Staff[];
+  staff: Cleaner[];
 };
 
 function StaffTable({ staff }: StaffTableProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [isAdding, setIsAdding] = useState(false);
+  const [isShowingToken, setIsShowingToken] = useState(false);
+  const [currentToken, setCurrentToken] = useState('');
 
+  const utils = api.useContext();
   const deleteCleanerById = api.cleaners.deleteById.useMutation();
 
   function handleAddClick() {
@@ -59,14 +59,31 @@ function StaffTable({ staff }: StaffTableProps) {
     return staff.map((staff) => (
       <li
         key={staff.id}
-        className="flex h-14 px-4 w-full justify-between items-center rounded-md border transition-shadow hover:shadow"
+        className="flex group h-14 px-4 w-full justify-between items-center rounded-md border transition-shadow hover:shadow"
       >
         <span>{staff.firstName} {staff.lastName}</span>
-        {isEditing && <Button onClick={() => {
-          deleteCleanerById.mutate({ id: staff.id }, {
-            onSuccess: () => setIsEditing(false),
-          })
-        }}>Удалить</Button>}
+        <span className="hidden group-hover:transition-all group-hover:block">
+          <Button onClick={() => {
+            setIsShowingToken(true)
+            setCurrentToken(staff.token)
+          }}>
+            <EyeIcon className="h-5 w-5" />
+            <span>Show Token</span>
+          </Button>
+        </span>
+        {isEditing && (
+          <Button onClick={() => {
+            deleteCleanerById.mutate({ id: staff.id }, {
+              async onSuccess() {
+                await utils.cleaners.list.invalidate();
+                setIsEditing(false);
+              }
+            })
+          }}
+          >
+            Удалить
+          </Button>
+        )}
       </li>
     ));
   }
@@ -82,6 +99,28 @@ function StaffTable({ staff }: StaffTableProps) {
         onChangeClick={handleChangeClick}
       />
       {isAdding && <AddStaffModal onClose={() => setIsAdding(false)} />}
+      {isShowingToken && (
+        <ShowTokenModal
+          onClose={() => setIsShowingToken(false)}
+          token={currentToken}
+        />
+      )}
     </>
   );
+}
+
+type ShowTokenModalProps = {
+  token: string
+  onClose: () => void
+}
+
+function ShowTokenModal({ token, onClose }: ShowTokenModalProps) {
+  return (
+    <Modal onClose={onClose}>
+      <div className="flex flex-col gap-2 p-2">
+        <h2 className="font-medium text-lg">Token</h2>
+        <div>{token}</div>
+      </div>
+    </Modal>
+  )
 }
