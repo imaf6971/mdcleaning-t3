@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { publicProcedure, createTRPCRouter } from "../trpc";
+import { publicProcedure, createTRPCRouter, cleanerProcedure } from "../trpc";
 
 const cleaningPlan = createTRPCRouter({
   deleteById: publicProcedure
@@ -26,6 +26,15 @@ const cleaningPlan = createTRPCRouter({
       });
       return newCleaning;
     }),
+  get: cleanerProcedure.query(({ ctx }) => {
+    return ctx.prisma.cleaningPlan.findMany({
+      where: {
+        cleaner: {
+          id: ctx.cleaner.id
+        }
+      }
+    })
+  })
 });
 
 export default cleaningPlan;
