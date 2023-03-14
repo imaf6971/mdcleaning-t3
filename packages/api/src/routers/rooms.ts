@@ -1,10 +1,10 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
-import { createTRPCRouter, publicProcedure } from "../trpc";
+import { cleanerProcedure, createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 
 const rooms = createTRPCRouter({
-  list: publicProcedure.query(async ({ ctx }) => {
-    const rooms = await ctx.prisma.room.findMany({
+  list: publicProcedure.query(({ ctx }) => {
+    return ctx.prisma.room.findMany({
       select: {
         id: true,
         title: true,
@@ -13,13 +13,12 @@ const rooms = createTRPCRouter({
         },
       },
     });
-    return rooms;
   }),
   findById: publicProcedure
     .input(z.number().int("Room id should be integer"))
-    .query(async ({ input, ctx }) => {
+    .query(({ input, ctx }) => {
       try {
-        return await ctx.prisma.room.findUniqueOrThrow({
+        return ctx.prisma.room.findUniqueOrThrow({
           where: {
             id: input,
           },
@@ -34,6 +33,7 @@ const rooms = createTRPCRouter({
             },
             reviews: true,
             actualCleanings: true,
+            items: true
           },
         });
       } catch (error) {
@@ -86,16 +86,26 @@ const rooms = createTRPCRouter({
         },
       });
     }),
-  startCleaning: publicProcedure
-    .input(z.number().int())
-    .mutation(async ({ input, ctx }) => {
-      const newCleaning = await ctx.prisma.actualCleaning.create({
+  startCleaning: cleanerProcedure
+    .input(z.object({
+      roomId: z.number().int()
+    }))
+    .mutation(({ input, ctx }) => {
+      return ctx.prisma.actualCleaning.create({
         data: {
-          roomId: input,
+          room: {
+            connect: {
+              id: input.roomId
+            }
+          },
           startTime: new Date(),
+          cleaner: {
+            connect: {
+              token: ctx.cleaner.token
+            }
+          }
         },
       });
-      return newCleaning;
     }),
   finishCleaning: publicProcedure
     .input(z.number().int())
@@ -119,6 +129,25 @@ const rooms = createTRPCRouter({
         data: cleaning,
       });
     }),
+  addHint: protectedProcedure
+    .input(z.object({
+      roomId: z.number().int(),
+      itemId: z.number().int(),
+    }))
+    .mutation(({ input: { roomId, itemId }, ctx }) => {
+      return ctx.prisma.room.update({
+        where: {
+          id: roomId
+        },
+        data: {
+          items: {
+            connect: {
+              id: itemId
+            }
+          }
+        }
+      })
+    })
 });
 
 export default rooms;

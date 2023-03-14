@@ -126,3 +126,26 @@ const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
  * @see https://trpc.io/docs/procedures
  */
 export const protectedProcedure = t.procedure.use(enforceUserIsAuthed);
+
+const enforceCleanerToken = t.middleware(async ({ ctx, rawInput, next }) => {
+  console.log('rawInput', rawInput);
+  if (!("token" in rawInput)) {
+    throw new TRPCError({
+      code: "UNAUTHORIZED",
+      message: "Please provide cleaner token"
+    })
+  }
+  const token = rawInput["token"] as string;
+  const cleaner = await ctx.prisma.cleaner.findUniqueOrThrow({
+    where: {
+      token
+    }
+  })
+  return next({
+    ctx: {
+      cleaner
+    }
+  })
+})
+
+export const cleanerProcedure = t.procedure.use(enforceCleanerToken)
